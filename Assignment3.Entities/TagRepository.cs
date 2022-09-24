@@ -1,4 +1,3 @@
-using Microsoft.Data.Sqlite;
 using Assignment3.Core;
 
 namespace Assignment3.Entities;
@@ -18,7 +17,7 @@ public class TagRepository : ITagRepository
 
         if (entity is null)
         {
-            entity = new Tag(){Name = tag.Name};
+            entity = new Tag() { Name = tag.Name };
 
             _context.Tags.Add(entity);
             _context.SaveChanges();
@@ -35,20 +34,26 @@ public class TagRepository : ITagRepository
 
     Response ITagRepository.Delete(int tagId, bool force)
     {
-        var entity = _context.Tags.FirstOrDefault(c => c.Id == tagId);
+        var tagExisting = _context.Tags.FirstOrDefault(c => c.Id == tagId);
         Response response;
 
-        if (entity is not null && force == false) 
-            response = Response.Conflict;
-        else if (entity is null) 
+        var tasks = _context.Tasks;
+        tasks.Find(tagId);
+        Tag tagInUse = null;
+        foreach (var t in tasks) foreach (var tag in t.Tags) if (tag.Id == tagId) tagInUse = tag;
+
+        if (tagExisting is null)
             response = Response.NotFound;
-        else
+        else if (tagInUse is null || force)
         {
-            _context.Tags.Remove(entity);
+            _context.Tags.Remove(tagExisting);
             _context.SaveChanges();
+
+            if (tagInUse is not null) foreach (var task in _context.Tasks) task.Tags.Remove(tagExisting);
 
             response = Response.Deleted;
         }
+        else response = Response.Conflict;
 
         return response;
     }
@@ -68,13 +73,13 @@ public class TagRepository : ITagRepository
         // }
 
         // IReadOnlyCollection<TagDTO> r = new IReadOnlyCollection
-                throw new NotImplementedException();
+        throw new NotImplementedException();
 
     }
 
     Response ITagRepository.Update(TagUpdateDTO tag)
     {
-        
+
         throw new NotImplementedException();
     }
 }

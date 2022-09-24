@@ -17,9 +17,10 @@ public class TagRepositoryTests : IDisposable
         var context = new KanbanContext(builder.Options);
         context.Database.EnsureCreated();
 
-        context.Tags.AddRange(new Tag() { Id = 1, Name = "Tag1" }, new Tag() { Id = 2, Name = "Tag2" });
+        var tag = new Tag() { Id = 1, Name = "Tag1" };
+        context.Tags.AddRange(tag, new Tag() { Id = 2, Name = "Tag2" });
         context.Users.AddRange(new User { Id = 1, Name = "User1", Email = "user1@itu.dk" }, new User { Id = 2, Name = "User2", Email = "user2@itu.dk" });
-        context.Tasks.AddRange(new Task { Id = 1, Title = "title1", State = State.New}, new Task { Id = 2, Title = "title2", State = State.Active});
+        context.Tasks.AddRange(new Task { Id = 1, Title = "title1", State = State.New, Tags = new List<Tag>(){tag}}, new Task { Id = 2, Title = "title2", State = State.Active});
         context.SaveChanges();
 
         _context = context;
@@ -52,5 +53,35 @@ public class TagRepositoryTests : IDisposable
         response.Should().Be(Response.Conflict);
 
         id.Should().Be(1);
+    }
+
+    [Fact]
+    public void Delete_non_existing_tag_should_give_not_found()
+    {
+        // Given
+        var response = _repository.Delete(4, false);
+    
+        // Then
+        response.Should().Be(Response.NotFound);
+    }
+
+    [Fact]
+    public void Delete_existing_tag_in_use_without_force_should_give_conflict()
+    {
+        // Given
+        var response = _repository.Delete(1, false);
+    
+        // Then
+        response.Should().Be(Response.Conflict);
+    }
+
+    [Fact]
+    public void Delete_existing_tag_in_use_with_force_should_give_deleted()
+    {
+        // Given
+        var response = _repository.Delete(1, true);
+    
+        // Then
+        response.Should().Be(Response.Deleted);
     }
 }
