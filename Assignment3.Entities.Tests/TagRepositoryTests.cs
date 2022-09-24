@@ -1,12 +1,13 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Assignment3.Core;
 
 namespace Assignment3.Entities.Tests;
 
 public class TagRepositoryTests : IDisposable
 {
-    private readonly KanbanContext _context;
-    private readonly TagRepository _repository;
+    private KanbanContext _context;
+    private ITagRepository _repository;
 
     public TagRepositoryTests() {
         var connection = new SqliteConnection("Filename=:memory:");
@@ -22,11 +23,34 @@ public class TagRepositoryTests : IDisposable
         context.SaveChanges();
 
         _context = context;
-        //_repository = new TagRepository(_context);
+        _repository = new TagRepository(_context);
     }
 
     public void Dispose()
     {
         _context.Dispose();
+    }
+
+    [Fact]
+    public void Create_given_Tag_returns_Created_with_Tag()
+    {
+        // Given
+        var (response, id) = _repository.Create(new TagCreateDTO("Tag3"));
+
+        // When
+        response.Should().Be(Response.Created);
+
+        // Then
+        id.Should().Be(3);
+    }
+
+    [Fact]
+    public void Create_given_existing_Tag_returns_Conflict_with_existing_Tag()
+    {
+        var (response, id) = _repository.Create(new TagCreateDTO("Tag1"));
+
+        response.Should().Be(Response.Conflict);
+
+        id.Should().Be(1);
     }
 }
