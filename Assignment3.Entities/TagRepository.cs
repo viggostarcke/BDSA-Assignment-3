@@ -67,19 +67,24 @@ public class TagRepository : ITagRepository
 
     IReadOnlyCollection<TagDTO> ITagRepository.ReadAll()
     {
-        // var entity = _context.Tags;
-        // foreach (var e in entity) {
-        //     yield return new TagDTO(e.Id, e.Name);
-        // }
-
-        // IReadOnlyCollection<TagDTO> r = new IReadOnlyCollection
-        throw new NotImplementedException();
-
+        List<TagDTO> list = new List<TagDTO>();
+        var entity = _context.Tags;
+        foreach (var e in entity) {
+            Console.WriteLine("tag found");
+            list.Add(new TagDTO(e.Id, e.Name));
+        }
+        return list;
     }
 
     Response ITagRepository.Update(TagUpdateDTO tag)
     {
+        var entity = _context.Tags.FirstOrDefault(c => c.Id == tag.Id);
 
-        throw new NotImplementedException();
+        if (entity is null) return Response.NotFound;
+        else {
+            entity.Name = tag.Name;
+            _context.SaveChanges();
+            return Response.Updated;
+        }
     }
 }

@@ -84,4 +84,56 @@ public class TagRepositoryTests : IDisposable
         // Then
         response.Should().Be(Response.Deleted);
     }
+
+    [Fact]
+    public void Read_with_existing_tag_returning_TagDTO()
+    {
+        // Given
+        var tag = _repository.Read(2);
+    
+        // Then
+        tag.Should().BeEquivalentTo(new TagDTO(2, "Tag2"));
+    }
+
+    [Fact]
+    public void Read_with_nonexisting_returning_null()
+    {
+        // Given
+        var tag = _repository.Read(4);
+    
+        // Then
+        tag.Should().BeNull();
+    }
+
+    [Fact]
+    public void ReadAll_should_return_all_tags()
+    {
+        // Given
+        var tags = _repository.ReadAll();
+    
+        // When
+    
+        // Then
+        tags.Should().BeEquivalentTo(new List<TagDTO>(){new TagDTO(1, "Tag1"), new TagDTO(2, "Tag2")});
+    }
+
+    [Fact]
+    public void Update_non_existing_tag_should_return_conflict()
+    {
+        // Given
+        var response = _repository.Update(new TagUpdateDTO(3, "tag3"));
+    
+        // Then
+        response.Should().Be(Response.NotFound);
+    }
+
+    [Fact]
+    public void Update_existing_tag_should_return_updated()
+    {
+        // Given
+        var response = _repository.Update(new TagUpdateDTO(1, "newTag1"));
+    
+        // Then
+        response.Should().Be(Response.Updated);
+    }
 }
