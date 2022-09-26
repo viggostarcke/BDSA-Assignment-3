@@ -118,7 +118,7 @@ public class TagRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void Update_non_existing_tag_should_return_conflict()
+    public void Update_non_existing_tag_should_return_notfound()
     {
         // Given
         var response = _repository.Update(new TagUpdateDTO(3, "tag3"));

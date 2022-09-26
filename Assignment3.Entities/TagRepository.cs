@@ -70,7 +70,6 @@ public class TagRepository : ITagRepository
         List<TagDTO> list = new List<TagDTO>();
         var entity = _context.Tags;
         foreach (var e in entity) {
-            Console.WriteLine("tag found");
             list.Add(new TagDTO(e.Id, e.Name));
         }
         return list;
