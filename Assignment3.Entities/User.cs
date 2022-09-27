@@ -4,13 +4,9 @@ public class User
 {
     public virtual int Id { get; set; }
 
-    [Required]
-    [MaxLength(100)]
-    public virtual string Name { get; set; }
+    public virtual string Name { get; set; } = null!;
 
-    [Required]
-    [MaxLength(100)]
-    public virtual string Email { get; set; }
+    public virtual string Email { get; set; } = null!;
 
-    public virtual List<Task> Tasks { get; set; }
+    public virtual List<Task> Tasks { get; set; } = new List<Task>{};
 }

@@ -6,7 +6,7 @@ public class Tag
 
     [Required]
     [MaxLength(50)]
-    public virtual string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    public virtual ICollection<Task> Tasks { get; set; }
+    public ICollection<Task> Tasks { get; set; } = new List<Task>{};
 }

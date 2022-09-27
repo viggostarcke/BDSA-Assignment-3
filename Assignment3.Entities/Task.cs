@@ -1,23 +1,32 @@
+using Assignment3.Core;
 namespace Assignment3.Entities;
 
 public class Task
 {
+
+    public Task() {
+        Created = DateTime.UtcNow;
+        StateUpdated = DateTime.UtcNow;
+    }
+
     public virtual int Id { get; set; }
 
-    [Required]
-    [MaxLength(100)]
-    public virtual string Title { get; set; }
+    public virtual string Title { get; set; } = null!;
 
-    public virtual User AssignedTo { get; set; }
+    public virtual User? AssignedTo { get; set; } = null;
 
-    //dont know if making this property is same as making it nullable
     public virtual string? Description { get; set; }
 
-    [Required]
-    public virtual string State { get; set; }
+    public virtual State State { get; set; }
 
-    public virtual ICollection<Tag> Tags { get; set; }
+    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>{};
 
+    public virtual DateTime Created {get; }
+
+    public virtual DateTime StateUpdated {get; set; }
+
+    public void UpdateState(State state) {
+        State = state;
+        StateUpdated = DateTime.UtcNow;
+    }
 }
-
-public enum State{New, Active, Resolved, Closed, Removed}
