@@ -56,6 +56,9 @@ public class UserRepository : IUserRepository
     Response IUserRepository.Update(UserUpdateDTO user) 
     {
         var entity = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+        entity.Id = user.Id;
+        entity.Name = user.Name;
+        entity.Email = user.Email;
 
         if (entity is null) 
         {
@@ -63,7 +66,7 @@ public class UserRepository : IUserRepository
         }
         else
         {
-            _context.Users.Remove(entity);
+            _context.Users.Update(entity);
             _context.SaveChanges();
 
             return Response.Updated;
